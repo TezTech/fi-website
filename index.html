@@ -227,7 +227,6 @@ entry update(string newName, nat newAge){
 						buildAbiInterface();
 						$('#stacktrace').html("Loading...");
 						$.post("https://api.fi-code.com/typecheck", {code:ml}, function(result){
-							console.log(result);
 							$('#stacktrace').html(result.data.stdout);
 						});
 						return ml;
