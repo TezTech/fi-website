@@ -272,7 +272,7 @@ entry update(string newName, nat newAge){
 					var storage = $("#storage").val(),
 					input = fi.abi.call(currentEntry.name, getJsonInput().input);
 					if (!storage || !input) return alert("Please enter storage and input");;
-					$('#runtrace').html("");
+					$('#runtrace').html("Loading...");
 					$.post("https://api.fi-code.com/run", {
 						code:ml,
 						storage : storage,
