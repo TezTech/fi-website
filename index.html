@@ -183,7 +183,6 @@ entry update(string newName, nat newAge){
         var editor = ace.edit("code");
 				var abi, ml;
         editor.setTheme("ace/theme/monokai");
-				editor.session.setMode("ace/mode/javascript");
         $('docmenut').ready(function(){
 					compile();
 					$('button#copyMichelson').click(function(){
