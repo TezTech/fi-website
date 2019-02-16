@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>fi - Smart coding for smart contracts</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  </head>
+  <body>
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="#">fi</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Code</a>
+          </li>
+          <!--<li class="nav-item">
+            <a class="nav-link" href="#">Documentation</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>-->
+        </ul>
+        <!--<form class="form-inline my-2 my-lg-0">
+          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>-->
+      </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+        <div class="col-md-12 text-center">
+            <h2>Welcome to fi - smart coding for smart contracts</h2>
+            <p><strong>fi</strong> is a high-level language for <a href="http://www.michelson-lang.com/" target="_blank">Michelson</a>, allowing programmers to easily develop <a href="http://tezos.com" target="_blank">Tezos</a>.</p>
+            <p><strong>We are currently in alpha</strong></p>
+        </div>
+        </div>
+        <div class="row">
+        <div class="col-md-12">
+        
+        <ul class="nav nav-tabs" role="tablist">
+          <li class="nav-item"><a id="editor-tab" data-toggle="tab" class="nav-link active" href="#editor" role="tab" aria-controls="editor" aria-expanded="true">Editor</a></li>
+          <li class="nav-item"><a id="typecheck-tab" data-toggle="tab" class="nav-link" href="#typecheck" role="tab" aria-controls="editor">Stacktrace</a></li>
+          <li class="nav-item"><a id="run-tab" data-toggle="tab" class="nav-link" href="#run" role="tab" aria-controls="editor">Test</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="editor" aria-labelledby="editor-tab" class="tab-pane fade show active" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div id="code">struct Person(
+	string name,
+	mutez balance,
+	nat age
+);
+
+storage map[address=>Person] users;
+
+entry add(Person person){
+	storage.users.push(SENDER, input.person);
+}
+
+entry update(string newName, nat newAge){
+	let Person me = storage.users.get(SENDER);
+	me.name = input.newName;
+	me.age = input.newAge;
+	storage.users.push(SENDER, me);
+}
+</div>
+                    </div>
+										
+                    <div class="col-md-6">
+                        <pre id="compiled"></pre>
+                    </div>
+                </div>
+								<div class="row">
+                    <div class="col-md-12">
+												<label><strong>Contract ABI</strong></label>
+                        <textarea style="width:100%;height:150px;" id="abi_text"></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <button type="button" id="compile" class="btn btn-primary">Compile</button>
+                        <button type="button" id="clear" class="btn btn-danger">Clear</button>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <button type="button" id="copyAbi" class="btn btn-secondary">Copy ABI</button>
+                        <button type="button" id="copyMichelson" class="btn btn-secondary">Copy Michelson</button>
+                    </div>
+                </div>
+            </div>
+            <div id="typecheck" aria-labelledby="typecheck-tab" class="tab-pane fade show" role="tabpanel">
+                <pre id="stacktrace"></pre>
+            </div>
+            <div id="run" aria-labelledby="run-tab" class="tab-pane fade show" role="tabpanel">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label>Contract Entry</label>
+											<select class="form-control" id="entryPoint">
+												<option value="">--Please Select--</option>
+											</select>
+											
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="storage">Storage</label>
+										<input type="text" class="form-control" id="storage" value="">
+									</div>
+								</div>
+							</div>
+							<div class="row" style="margin-bottom:30px;">
+								<div class="col-md-12">
+									<label>Input fields</label>
+									<div id="inputFields" class="row">
+														
+									</div>
+								</div>
+							</div>
+							<div class="row" style="margin-bottom:30px;">
+								<div class="col-md-6">
+										<button type="button" id="run" class="btn btn-primary">Run</button>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12">
+									<pre id="runtrace"></pre>
+								</div>
+							</div>
+						</div>
+					</div>
+        </div>
+        <div class="row footer">
+        <div class="col-md-12">
+        Developed by <a href="https://teztech.io" target="_blank">TezTech Labs</a>
+        </div>
+        </div>
+    </div>
+	<script src="fi-compile.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <script src="https://ace.c9.io/build/src/ace.js" type="text/javascript" charset="utf-8"></script>
+    <style type="text/css" media="screen">
+        body{
+            padding-top:5em;
+        }
+        #code { 
+            width:100%;
+            height:300px;
+        }
+        #compiled{
+            height: 300px;
+            width: 100%;
+            word-wrap: break-word;
+            white-space: normal;
+            display: block;
+        }
+        pre{
+            background-color:#eee;
+            padding:5px;
+        }
+        .tab-content{
+            padding-top:30px;
+        }
+        .footer{
+            text-align:center;
+            margin:30px;
+            font-size:.9em;
+        }
+    </style>
+    <script>
+        var editor = ace.edit("code");
+				var abi, ml;
+        editor.setTheme("ace/theme/monokai");
+				editor.session.setMode("ace/mode/javascript");
+        $('docmenut').ready(function(){
+					compile();
+					$('button#copyMichelson').click(function(){
+						 copyToClipboard($("#compiled").html()); 
+						 alert("Compiled code has been copied");
+					});
+					$('button#copyAbi').click(function(){
+						 copyToClipboard($("#abi_text").val()); 
+						 alert("Compiled ABI has been copied");
+					});
+					$('button#clear').click(function(){
+						editor.setValue("");
+						$("#compiled").html("");
+						$("#abi_text").html("");
+						$("#stacktrace").html("");
+					});
+					$('button#compile').click(function(){
+						$("#compiled").html("");
+						compile();
+					});
+					$('button#run').click(function(){
+						run();
+					});
+        });
+        function compile(){
+					var code = editor.getValue();
+					if (!code) return false;
+					var compiled = fi.compile(code);
+					ml = compiled.ml;
+					fi.abi.load(compiled.abi);
+					abi = JSON.parse(compiled.abi);
+					$("#storage").attr("placeholder", fi._core.compile.namedType(abi.storage));
+					$("#compiled").html(ml);
+					$("#abi_text").val(compiled.abi);
+					buildAbiInterface();
+					$('#stacktrace').html("Loading...");
+					$.post("https://api.fi-code.com/typecheck", {code:ml}, function(result){
+						console.log(result);
+						$('#stacktrace').html(result.data.stdout);
+					});
+					return ml;
+        }
+				var currentEntry;
+				function buildAbiInterface(){
+					$('#entryPoint').children('option:not(:first)').remove();
+					for(var i = 0; i < abi.entry.length; i++){
+						$("#entryPoint").append('<option value="'+i+'">'+abi.entry[i].name+'</option>');
+					}
+					$('#entryPoint').on('change', function() {
+						if (!this.value) {
+							currentEntry = false;
+							return false;
+						}
+						currentEntry = abi.entry[this.value];
+						$("#inputFields").html('');
+						buildInputFields('input', currentEntry.input);
+						return true;
+					});
+				}
+				function buildInputFields(lab, cc){
+					for(var i = 0; i < cc.length; i++){
+						console.log(cc[i].type[0]);
+						var nn = lab + '.' + cc[i].name;
+						if (typeof abi.struct != 'undefined'){
+							ind = fi._core.helper.findInObjArray(abi.struct, 'name', cc[i].type[0]);
+						} else ind = -1;
+						if (ind >= 0){
+							buildInputFields(nn, abi.struct[ind].type);
+						} else {
+							$("#inputFields").append('<div class="col-md-4"><label>'+nn+'</label><input type="text" class="form-control" name="'+nn+'" placeholder="' + cc[i].type[0] + '"></div>');
+						}
+					}
+				}
+				function run(){
+					var storage = $("#storage").val(),
+					input = fi.abi.call(currentEntry.name, getJsonInput().input);
+					if (!storage || !input) return;
+					$.post("https://api.fi-code.com/run", {
+						code:ml,
+						storage : storage,
+						input : input
+					}, function(result){
+						$('#runtrace').html(result.data.stdout);
+					});
+        }
+				function getJsonInput(){
+					var obj = {};
+					var t = $("input[name^='input']").map(function(){
+						var name = $(this).attr('name');
+						return [name.split(".").concat([$(this).val()])];
+					}).get();
+
+					for (var i = 0; i < t.length; i++){
+						obj = buildJson(t[i], obj);
+					}
+					return obj;
+				}
+				function buildJson(t, oo){
+					var tn = t.shift();
+					if (t.length > 1){
+						if (typeof oo[tn] == 'undefined') oo[tn] = {};
+						oo[tn] = buildJson(t, oo[tn]);
+					} else {
+						oo[tn] = t.shift();
+					}
+					return oo;
+				}
+        function copyToClipboard(text) {
+					if (window.clipboardData && window.clipboardData.setData) {
+							// IE specific code path to prevent textarea being shown while dialog is visible.
+							return clipboardData.setData("Text", text); 
+
+					} else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+							var textarea = document.createElement("textarea");
+							textarea.textContent = text;
+							textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in MS Edge.
+							document.body.appendChild(textarea);
+							textarea.select();
+							try {
+									return document.execCommand("copy");  // Security exception may be thrown by some browsers.
+							} catch (ex) {
+									console.warn("Copy to clipboard failed.", ex);
+									return false;
+							} finally {
+									document.body.removeChild(textarea);
+							}
+					}
+			}
+    </script>
+		<style> label { font-weight: bold; } </style>
+  </body>
+</html>
