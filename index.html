@@ -18,14 +18,11 @@
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="#">Code</a>
-          </li>
-          <!--<li class="nav-item">
-            <a class="nav-link" href="#">Documentation</a>
+            <a class="nav-link" href="/">Code</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>-->
+            <a class="nav-link" href="https://fi-code.gitbooks.io/documentation/content/" target="_blank">Documentation</a>
+          </li>
         </ul>
         <!--<form class="form-inline my-2 my-lg-0">
           <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
@@ -33,7 +30,7 @@
         </form>-->
       </div>
     </nav>
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
         <div class="col-md-12 text-center">
             <h2>Welcome to fi - smart coding for smart contracts</h2>
@@ -46,13 +43,14 @@
         
         <ul class="nav nav-tabs" role="tablist">
           <li class="nav-item"><a id="editor-tab" data-toggle="tab" class="nav-link active" href="#editor" role="tab" aria-controls="editor" aria-expanded="true">Editor</a></li>
-          <li class="nav-item"><a id="typecheck-tab" data-toggle="tab" class="nav-link" href="#typecheck" role="tab" aria-controls="editor">Stacktrace</a></li>
+          <li class="nav-item"><a id="typecheck-tab" data-toggle="tab" class="nav-link" href="#typecheck" role="tab" aria-controls="editor">Typechecker</a></li>
           <li class="nav-item"><a id="run-tab" data-toggle="tab" class="nav-link" href="#run" role="tab" aria-controls="editor">Test</a></li>
         </ul>
         <div class="tab-content">
             <div id="editor" aria-labelledby="editor-tab" class="tab-pane fade show active" role="tabpanel">
                 <div class="row">
                     <div class="col-md-6">
+												<label>fi</label>
                         <div id="code">struct Person(
 	string name,
 	mutez balance,
@@ -75,13 +73,14 @@ entry update(string newName, nat newAge){
                     </div>
 										
                     <div class="col-md-6">
-                        <pre id="compiled"></pre>
+											<label>Compiled Michelson</label>
+											<pre id="compiled"></pre>
                     </div>
                 </div>
 								<div class="row">
                     <div class="col-md-12">
-												<label><strong>Contract ABI</strong></label>
-                        <textarea style="width:100%;height:150px;" id="abi_text"></textarea>
+												<label>Contract ABI</label>
+                        <pre class="disp" id="abi_text"></pre>
                     </div>
                 </div>
                 <div class="row">
@@ -137,10 +136,8 @@ entry update(string newName, nat newAge){
 						</div>
 					</div>
         </div>
-        <div class="row footer">
-        <div class="col-md-12">
+        <div class="col-md-12 text-center">
         Developed by <a href="https://teztech.io" target="_blank">TezTech Labs</a>
-        </div>
         </div>
     </div>
 	<script src="fi-compile.min.js"></script>
@@ -158,6 +155,12 @@ entry update(string newName, nat newAge){
         }
         #compiled{
             height: 300px;
+            width: 100%;
+            word-wrap: break-word;
+            white-space: normal;
+            display: block;
+        }
+				.disp{
             width: 100%;
             word-wrap: break-word;
             white-space: normal;
@@ -188,7 +191,7 @@ entry update(string newName, nat newAge){
 						 alert("Compiled code has been copied");
 					});
 					$('button#copyAbi').click(function(){
-						 copyToClipboard($("#abi_text").val()); 
+						 copyToClipboard($("#abi_text").html()); 
 						 alert("Compiled ABI has been copied");
 					});
 					$('button#clear').click(function(){
@@ -208,20 +211,32 @@ entry update(string newName, nat newAge){
         function compile(){
 					var code = editor.getValue();
 					if (!code) return false;
+					$("#compiled").html('');
+					$("#abi_text").html('');
+					$("#stacktrace").html('');
+					$("#inputFields").html('');
+					$('#entryPoint').children('option:not(:first)').remove();
+					$("#storage").attr("placeholder", "");
+					try{
 					var compiled = fi.compile(code);
-					ml = compiled.ml;
-					fi.abi.load(compiled.abi);
-					abi = JSON.parse(compiled.abi);
-					$("#storage").attr("placeholder", fi._core.compile.namedType(abi.storage));
-					$("#compiled").html(ml);
-					$("#abi_text").val(compiled.abi);
-					buildAbiInterface();
-					$('#stacktrace').html("Loading...");
-					$.post("https://api.fi-code.com/typecheck", {code:ml}, function(result){
-						console.log(result);
-						$('#stacktrace').html(result.data.stdout);
-					});
-					return ml;
+						ml = compiled.ml;
+						fi.abi.load(compiled.abi);
+						abi = JSON.parse(compiled.abi);
+						$("#storage").attr("placeholder", fi._core.compile.namedType(abi.storage));
+						$("#compiled").html(ml);
+						$("#abi_text").html(compiled.abi);
+						buildAbiInterface();
+						$('#stacktrace').html("Loading...");
+						$.post("https://api.fi-code.com/typecheck", {code:ml}, function(result){
+							console.log(result);
+							$('#stacktrace').html(result.data.stdout);
+						});
+						return ml;
+					} catch(e){
+						$("#compiled").html(e);
+						$("#abi_text").html("Error with compiler");
+						$("#stacktrace").html("Error with compiler");
+					}
         }
 				var currentEntry;
 				function buildAbiInterface(){
@@ -242,7 +257,6 @@ entry update(string newName, nat newAge){
 				}
 				function buildInputFields(lab, cc){
 					for(var i = 0; i < cc.length; i++){
-						console.log(cc[i].type[0]);
 						var nn = lab + '.' + cc[i].name;
 						if (typeof abi.struct != 'undefined'){
 							ind = fi._core.helper.findInObjArray(abi.struct, 'name', cc[i].type[0]);
@@ -257,13 +271,17 @@ entry update(string newName, nat newAge){
 				function run(){
 					var storage = $("#storage").val(),
 					input = fi.abi.call(currentEntry.name, getJsonInput().input);
-					if (!storage || !input) return;
+					if (!storage || !input) return alert("Please enter storage and input");;
+					$('#runtrace').html("");
 					$.post("https://api.fi-code.com/run", {
 						code:ml,
 						storage : storage,
 						input : input
 					}, function(result){
-						$('#runtrace').html(result.data.stdout);
+						if (result.success)
+							$('#runtrace').html(result.data.stdout);
+						else
+							$('#runtrace').html("There was an unknown error");
 					});
         }
 				function getJsonInput(){
