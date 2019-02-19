@@ -41,7 +41,14 @@ function compile(){
     ml = compiled.ml;
     fi.abi.load(compiled.abi);
     abi = JSON.parse(compiled.abi);
-    $("#storage").attr("placeholder", fi._core.compile.namedType(abi.storage));
+		if (typeof abi.storage != 'undefined'){
+			$("#storage").attr("disabled", false);
+			$("#storage").attr("placeholder", fi._core.compile.namedType(abi.storage));
+		}else {
+			$("#storage").attr("placeholder", 'unit');
+			$("#storage").val("Unit");
+			$("#storage").attr("disabled", true);
+		}
     $("#compiled").html(ml);
     $("#abi_text").html(compiled.abi);
     buildAbiInterface();
