@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>fi - Smart coding for smart contracts</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="custom.css" />
   </head>
-  <body>
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <body class="d-flex flex-column h-100">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
       <a class="navbar-brand" href="#">fi</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -24,308 +25,111 @@
             <a class="nav-link" href="https://learn.fi-code.com/" target="_blank">Documentation</a>
           </li>
         </ul>
-        <!--<form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>-->
+        <a class="btn btn-outline-danger my-2 my-sm-0" href="https://github.com/TezTech/fi-compiler" target="_blank">View Source</a>
       </div>
     </nav>
-    <div class="container-fluid">
-        <div class="row">
+    <div class="container-fluid pb-0 d-flex flex-column flex-grow-1">
+      <div class="row d-none d-sm-none d-md-block" style="height:150px;">
         <div class="col-md-12 text-center">
-            <h2>Welcome to fi - smart coding for smart contracts</h2>
-            <p><strong>fi</strong> is a high-level language for <a href="http://www.michelson-lang.com/" target="_blank">Michelson</a>, allowing programmers to easily develop <a href="http://tezos.com" target="_blank">Tezos</a>.</p>
-            <p><strong>We are currently in alpha</strong></p>
+          <h2>Welcome to fi - smart coding for smart contracts</h2>
+          <p><strong>fi</strong> (pronounced fee) is a high-level language for <a href="http://www.michelson-lang.com/" target="_blank">Michelson</a>, allowing programmers to easily develop <a href="http://tezos.com" target="_blank">Tezos</a>.</p>
+          <p><strong>We are currently in alpha</strong></p>
         </div>
-        </div>
-        <div class="row">
+      </div>
+      <div class="row h-100 flex-grow-1">
         <div class="col-md-12">
-        
-        <ul class="nav nav-tabs" role="tablist">
-          <li class="nav-item"><a id="editor-tab" data-toggle="tab" class="nav-link active" href="#editor" role="tab" aria-controls="editor" aria-expanded="true">Editor</a></li>
-          <li class="nav-item"><a id="typecheck-tab" data-toggle="tab" class="nav-link" href="#typecheck" role="tab" aria-controls="editor">Typechecker</a></li>
-          <li class="nav-item"><a id="run-tab" data-toggle="tab" class="nav-link" href="#run" role="tab" aria-controls="editor">Test</a></li>
-        </ul>
-        <div class="tab-content">
-            <div id="editor" aria-labelledby="editor-tab" class="tab-pane fade show active" role="tabpanel">
-                <div class="row">
-                    <div class="col-md-6">
-												<label>fi</label>
-                        <div id="code">struct Person(
-	string name,
-	mutez balance,
-	nat age
+          <div class="row h-100">
+            <div class="col-md-6 h-100 d-flex flex-column flex-grow-1">
+              <div>
+                <label>fi Editor</label>
+                <button type="button" id="clear" class="btn btn-danger pull-right">Clear</button>
+                <button type="button" id="compile" class="btn btn-primary pull-right">Compile</button>
+              </div>
+              <div id="code" class="h-100 flex-grow-1">struct Person(
+  string name,
+  mutez balance,
+  nat age
 );
 
 storage map[address=>Person] users;
 
 entry add(Person person){
-	storage.users.push(SENDER, input.person);
+  storage.users.push(SENDER, input.person);
 }
 
 entry update(string newName, nat newAge){
-	let Person me = storage.users.get(SENDER);
-	me.name = input.newName;
-	me.age = input.newAge;
-	storage.users.push(SENDER, me);
-}
-</div>
-                    </div>
-										
-                    <div class="col-md-6">
-											<label>Compiled Michelson</label>
-											<pre id="compiled"></pre>
-                    </div>
+  let Person me = storage.users.get(SENDER);
+  me.name = input.newName;
+  me.age = input.newAge;
+  storage.users.push(SENDER, me);
+}</div>
+            </div>
+            <div class="col-md-6 h-100 d-flex flex-column">
+              <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item"><a id="michelson-tab" data-toggle="tab" class="nav-link active" href="#michelson" role="tab" aria-controls="michelson" aria-expanded="true">Michelson</a></li>
+                <li class="nav-item"><a id="abi-tab" data-toggle="tab" class="nav-link" href="#abi" role="tab" aria-controls="abi" aria-expanded="true">Contract ABI</a></li>
+                <li class="nav-item"><a id="run-tab" data-toggle="tab" class="nav-link" href="#run" role="tab" aria-controls="run">Test</a></li>
+              </ul>
+              <div class="tab-content flex-grow-1">
+                <div id="michelson" aria-labelledby="michelson-tab" class="tab-pane fade show active h-100" role="tabpanel">
+                  <label>Michelson</label>
+                  <button type="button" id="copyMichelson" class="btn btn-secondary pull-right">Copy Michelson</button>
+                  <pre id="compiled"></pre>
+                  <pre id="stacktrace"></pre>
                 </div>
-								<div class="row">
+                <div id="abi" aria-labelledby="abi-tab" class="tab-pane fade show" role="tabpanel">
+                  <label>Contract ABI</label>
+                  <button type="button" id="copyAbi" class="btn btn-secondary pull-right">Copy ABI</button>
+                  <p style="    margin-top: 20px;" class="alert alert-success mt-20">The contract ABI can be used alongside the core ABI library to easily interface with your smart contract</p>
+                  <pre class="disp" id="abi_text"></pre>
+                </div>
+                <div id="run" aria-labelledby="run-tab" class="tab-pane fade show" role="tabpanel">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label>Contract Entry</label>
+                        <select class="form-control" id="entryPoint">
+                          <option value="">--Please Select--</option>
+                        </select>
+                        <div id="inputFields" class="row">
+                                
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="storage">Storage</label>
+                        <input type="text" class="form-control" id="storage" value="">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row" style="margin-bottom:30px;">
+                    <div class="col-md-6">
+                        <button type="button" id="run" class="btn btn-primary">Run</button>
+                    </div>
+                  </div>
+                  <div class="row">
                     <div class="col-md-12">
-												<label>Contract ABI</label>
-                        <pre class="disp" id="abi_text"></pre>
+                      <pre id="runtrace"></pre>
                     </div>
+                  </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <button type="button" id="compile" class="btn btn-primary">Compile</button>
-                        <button type="button" id="clear" class="btn btn-danger">Clear</button>
-                    </div>
-                    <div class="col-md-6 text-right">
-                        <button type="button" id="copyAbi" class="btn btn-secondary">Copy ABI</button>
-                        <button type="button" id="copyMichelson" class="btn btn-secondary">Copy Michelson</button>
-                    </div>
-                </div>
+              </div>
             </div>
-            <div id="typecheck" aria-labelledby="typecheck-tab" class="tab-pane fade show" role="tabpanel">
-                <pre id="stacktrace"></pre>
-            </div>
-            <div id="run" aria-labelledby="run-tab" class="tab-pane fade show" role="tabpanel">
-							<div class="row">
-								<div class="col-md-6">
-									<div class="form-group">
-										<label>Contract Entry</label>
-											<select class="form-control" id="entryPoint">
-												<option value="">--Please Select--</option>
-											</select>
-											
-									</div>
-								</div>
-								<div class="col-md-6">
-									<div class="form-group">
-										<label for="storage">Storage</label>
-										<input type="text" class="form-control" id="storage" value="">
-									</div>
-								</div>
-							</div>
-							<div class="row" style="margin-bottom:30px;">
-								<div class="col-md-12">
-									<label>Input fields</label>
-									<div id="inputFields" class="row">
-														
-									</div>
-								</div>
-							</div>
-							<div class="row" style="margin-bottom:30px;">
-								<div class="col-md-6">
-										<button type="button" id="run" class="btn btn-primary">Run</button>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-12">
-									<pre id="runtrace"></pre>
-								</div>
-							</div>
-						</div>
-					</div>
+          </div>
         </div>
-        <div class="col-md-12 text-center">
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center footer">
         Developed by <a href="https://teztech.io" target="_blank">TezTech Labs</a>
         </div>
+      </div>
     </div>
-	<script src="fi-compile.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
-    <script src="https://ace.c9.io/build/src/ace.js" type="text/javascript" charset="utf-8"></script>
-    <style type="text/css" media="screen">
-        body{
-            padding-top:5em;
-        }
-        #code { 
-            width:100%;
-            height:300px;
-        }
-        #compiled{
-            height: 300px;
-            width: 100%;
-            word-wrap: break-word;
-            white-space: normal;
-            display: block;
-        }
-				.disp{
-            width: 100%;
-            word-wrap: break-word;
-            white-space: normal;
-            display: block;
-        }
-        pre{
-            background-color:#eee;
-            padding:5px;
-        }
-        .tab-content{
-            padding-top:30px;
-        }
-        .footer{
-            text-align:center;
-            margin:30px;
-            font-size:.9em;
-        }
-    </style>
-    <script>
-        var editor = ace.edit("code");
-				var abi, ml;
-        editor.setTheme("ace/theme/monokai");
-        $('docmenut').ready(function(){
-					compile();
-					$('button#copyMichelson').click(function(){
-						 copyToClipboard($("#compiled").html()); 
-						 alert("Compiled code has been copied");
-					});
-					$('button#copyAbi').click(function(){
-						 copyToClipboard($("#abi_text").html()); 
-						 alert("Compiled ABI has been copied");
-					});
-					$('button#clear').click(function(){
-						editor.setValue("");
-						$("#compiled").html("");
-						$("#abi_text").html("");
-						$("#stacktrace").html("");
-					});
-					$('button#compile').click(function(){
-						$("#compiled").html("");
-						compile();
-					});
-					$('button#run').click(function(){
-						run();
-					});
-        });
-        function compile(){
-					var code = editor.getValue();
-					if (!code) return false;
-					$("#compiled").html('');
-					$("#abi_text").html('');
-					$("#stacktrace").html('');
-					$("#inputFields").html('');
-					$('#entryPoint').children('option:not(:first)').remove();
-					$("#storage").attr("placeholder", "");
-					try{
-					var compiled = fi.compile(code);
-						ml = compiled.ml;
-						fi.abi.load(compiled.abi);
-						abi = JSON.parse(compiled.abi);
-						$("#storage").attr("placeholder", fi._core.compile.namedType(abi.storage));
-						$("#compiled").html(ml);
-						$("#abi_text").html(compiled.abi);
-						buildAbiInterface();
-						$('#stacktrace').html("Loading...");
-						$.post("https://api.fi-code.com/typecheck", {code:ml}, function(result){
-							$('#stacktrace').html(result.data.stdout);
-						});
-						return ml;
-					} catch(e){
-						$("#compiled").html(e);
-						$("#abi_text").html("Error with compiler");
-						$("#stacktrace").html("Error with compiler");
-					}
-        }
-				var currentEntry;
-				function buildAbiInterface(){
-					$('#entryPoint').children('option:not(:first)').remove();
-					for(var i = 0; i < abi.entry.length; i++){
-						$("#entryPoint").append('<option value="'+i+'">'+abi.entry[i].name+'</option>');
-					}
-					$('#entryPoint').on('change', function() {
-						if (!this.value) {
-							currentEntry = false;
-							return false;
-						}
-						currentEntry = abi.entry[this.value];
-						$("#inputFields").html('');
-						buildInputFields('input', currentEntry.input);
-						return true;
-					});
-				}
-				function buildInputFields(lab, cc){
-					for(var i = 0; i < cc.length; i++){
-						var nn = lab + '.' + cc[i].name;
-						if (typeof abi.struct != 'undefined'){
-							ind = fi._core.helper.findInObjArray(abi.struct, 'name', cc[i].type[0]);
-						} else ind = -1;
-						if (ind >= 0){
-							buildInputFields(nn, abi.struct[ind].type);
-						} else {
-							$("#inputFields").append('<div class="col-md-4"><label>'+nn+'</label><input type="text" class="form-control" name="'+nn+'" placeholder="' + cc[i].type[0] + '"></div>');
-						}
-					}
-				}
-				function run(){
-					var storage = $("#storage").val(),
-					input = fi.abi.call(currentEntry.name, getJsonInput().input);
-					if (!storage || !input) return alert("Please enter storage and input");;
-					$('#runtrace').html("Loading...");
-					$.post("https://api.fi-code.com/run", {
-						code:ml,
-						storage : storage,
-						input : input
-					}, function(result){
-						if (result.success)
-							$('#runtrace').html(result.data.stdout);
-						else
-							$('#runtrace').html("There was an unknown error");
-					});
-        }
-				function getJsonInput(){
-					var obj = {};
-					var t = $("input[name^='input']").map(function(){
-						var name = $(this).attr('name');
-						return [name.split(".").concat([$(this).val()])];
-					}).get();
+    <script src="fi-compile.min.js" type="text/javascript"></script>
+    <script src="ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
-					for (var i = 0; i < t.length; i++){
-						obj = buildJson(t[i], obj);
-					}
-					return obj;
-				}
-				function buildJson(t, oo){
-					var tn = t.shift();
-					if (t.length > 1){
-						if (typeof oo[tn] == 'undefined') oo[tn] = {};
-						oo[tn] = buildJson(t, oo[tn]);
-					} else {
-						oo[tn] = t.shift();
-					}
-					return oo;
-				}
-        function copyToClipboard(text) {
-					if (window.clipboardData && window.clipboardData.setData) {
-							// IE specific code path to prevent textarea being shown while dialog is visible.
-							return clipboardData.setData("Text", text); 
-
-					} else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
-							var textarea = document.createElement("textarea");
-							textarea.textContent = text;
-							textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in MS Edge.
-							document.body.appendChild(textarea);
-							textarea.select();
-							try {
-									return document.execCommand("copy");  // Security exception may be thrown by some browsers.
-							} catch (ex) {
-									console.warn("Copy to clipboard failed.", ex);
-									return false;
-							} finally {
-									document.body.removeChild(textarea);
-							}
-					}
-			}
-    </script>
-		<style> label { font-weight: bold; } </style>
+    <script src="custom.js" type="text/javascript" charset="utf-8"></script>
   </body>
 </html>
