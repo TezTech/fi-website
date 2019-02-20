@@ -39,6 +39,12 @@ function compile(){
   try{
   var compiled = fi.compile(code);
     ml = compiled.ml;
+		if ($('input#optimized').is(':checked')) {
+			$("#compiled").addClass("wrapped");
+		} else {
+			ml = formatMl(ml);
+			$("#compiled").removeClass("wrapped");
+		}
     fi.abi.load(compiled.abi);
     abi = JSON.parse(compiled.abi);
 		if (typeof abi.storage != 'undefined'){
@@ -96,7 +102,70 @@ function buildFields(lab, cc, id){
     }
   }
 }
-
+function formatMlLines(t, ti){
+	var tl = 0, fm = '', lns = [], bl = 0, instring = false, escaped = false, inline = false, incode = [];
+	for(var i = 0; i < t.length; i++){
+		if (t[i] == '{') {
+			bl++;
+			if (bl == 1) {
+				if (incode.length == 0){
+					inline = true;
+					lns.push(fm);
+					fm = '';
+				}
+				continue;
+			}
+		} else if (t[i] == '}') {
+			bl--;
+			if (bl == 0){
+				incode.push(fm);
+				fm = '';
+				continue;
+			}
+		}
+		else if (bl == 0){
+			if (t[i] == ';') {
+				if (inline){
+					var fm1 = lns.pop();
+					fm1 = fm1.slice(0);
+					var fm2 = formatMlLines(incode.shift(), (ti+fm1.length + 2));
+					fm = fm1 + "{ " + fm2 + " }";
+					while (incode.length){
+						fm += "\n" + (" ").repeat(ti+fm1.length) + "{ " + formatMlLines(incode.shift(), (ti+fm1.length + 2)) + " }"
+					}
+					fm += ";";
+					lns.push(fm);
+					fm = '';
+					inline = false;
+					continue;
+				}
+				fm += ";";
+				lns.push(fm);
+				fm = '';
+				continue;
+			}
+		}
+		fm += t[i];
+	}
+	if (inline){
+		var fm1 = lns.pop();
+		fm1 = fm1.slice(0);
+		var fm2 = formatMlLines(incode.shift(), (ti+fm1.length + 2));
+		fm = fm1 + "{ " + fm2 + " }";
+		while (incode.length){
+			fm += "\n" + (" ").repeat(ti+fm1.length) + "{ " + formatMlLines(incode.shift(), (ti+fm1.length + 2)) + " }"
+		}
+		fm += ";";
+		lns.push(fm);
+		fm = '';
+		inline = false;
+	}
+	if (fm) lns.push(fm);
+	return lns.join("\n" + (" ").repeat(ti));
+}
+function formatMl(ml){
+	return formatMlLines(ml, 0).replace(/; }/g, " }")
+}
 function run(){
   $('#runtrace').html("Loading...");
 	try {

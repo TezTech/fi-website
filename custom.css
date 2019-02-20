@@ -19,9 +19,11 @@ body, html {
 #compiled{
 		height: 435px;
 		width: 100%;
-		word-wrap: break-word;
-		white-space: normal;
 		display: block;
+}
+.wrapped{
+	word-wrap: break-word;
+	white-space: normal;	
 }
 .disp{
 		width: 100%;
