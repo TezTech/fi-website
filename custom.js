@@ -37,14 +37,16 @@ function compile(){
   $('#entryPoint').children('option:not(:first)').remove();
   $("#storage").attr("placeholder", "");
   try{
-  var compiled = fi.compile(code);
-    ml = compiled.ml;
-		if ($('input#optimized').is(':checked')) {
+		optimizedMl = $('input#optimized').is(':checked');
+		if (optimizedMl) {
 			$("#compiled").addClass("wrapped");
 		} else {
-			ml = formatMl(ml);
 			$("#compiled").removeClass("wrapped");
 		}
+		var compiled = fi.compile(code, {
+			ml_format : (optimizedMl ? "compact" : "readable")
+		});
+    ml = compiled.ml;
     fi.abi.load(compiled.abi);
     abi = JSON.parse(compiled.abi);
 		if (typeof abi.storage != 'undefined'){
@@ -62,7 +64,11 @@ function compile(){
     buildInputInterface();
     $('#stacktrace').html("Loading...");
     $.post("https://api.fi-code.com/typecheck", {code:ml}, function(result){
-      $('#stacktrace').html(result.data.stdout);
+			if (result.success){
+				$('#stacktrace').html(result.data.stdout);
+			} else {
+				$('#stacktrace').html("Typecheck error");
+			}
     });
 		$('#runtrace').html("Please enter input and storage above to run");
     return ml;
