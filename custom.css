@@ -1,42 +1,45 @@
 body{
-            padding-top:5em;
-        }
-        body, html {
-            height: 100%;
-        }
-        #code { 
-            width:100%;
-            height:500px;
-        }
-        .pull-right{
-          float:right;
-          margin-bottom:5px;
-          margin-left:5px;
-        }
-        #abi_text{
-              height: 329px;
-        }
-        #compiled{
-            height: 428px;
-            width: 100%;
-            word-wrap: break-word;
-            white-space: normal;
-            display: block;
-        }
-				.disp{
-            width: 100%;
-            word-wrap: break-word;
-            white-space: normal;
-            display: block;
-        }
-        pre{
-            background-color:#eee;
-            padding:5px;
-        }
-        .tab-content{
-            padding-top:30px;
-        }
-        label { font-weight: bold; } 
-        .footer{
-          padding:20px;
-        }
+		padding-top:5em;
+}
+body, html {
+		height: 100%;
+}
+#code { 
+		width:100%;
+		height:500px;
+}
+.pull-right{
+	float:right;
+	margin-bottom:5px;
+	margin-left:5px;
+}
+#abi_text{
+			height: 329px;
+}
+#compiled{
+		height: 435px;
+		width: 100%;
+		word-wrap: break-word;
+		white-space: normal;
+		display: block;
+}
+.disp{
+		width: 100%;
+		word-wrap: break-word;
+		white-space: normal;
+		display: block;
+}
+pre{
+		background-color:#eee;
+		padding:5px;
+}
+.tab-content{
+		padding-top:30px;
+}
+label { font-weight: bold; } 
+.footer{
+	padding:20px;
+}
+input,select{
+	margin-bottom: 5px;
+}

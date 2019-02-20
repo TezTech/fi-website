@@ -44,6 +44,8 @@ function compile(){
 		if (typeof abi.storage != 'undefined'){
 			$("#storage").attr("disabled", false);
 			$("#storage").attr("placeholder", fi._core.compile.namedType(abi.storage));
+			$("#storageFields").html('');
+			buildFields('storage', abi.storage, '#storageFields');
 		}else {
 			$("#storage").attr("placeholder", 'unit');
 			$("#storage").val("Unit");
@@ -51,11 +53,12 @@ function compile(){
 		}
     $("#compiled").html(ml);
     $("#abi_text").html(compiled.abi);
-    buildAbiInterface();
+    buildInputInterface();
     $('#stacktrace').html("Loading...");
     $.post("https://api.fi-code.com/typecheck", {code:ml}, function(result){
       $('#stacktrace').html(result.data.stdout);
     });
+		$('#runtrace').html("Please enter input and storage above to run");
     return ml;
   } catch(e){
     $("#compiled").html(e);
@@ -64,7 +67,7 @@ function compile(){
   }
 }
 var currentEntry;
-function buildAbiInterface(){
+function buildInputInterface(){
   $('#entryPoint').children('option:not(:first)').remove();
   for(var i = 0; i < abi.entry.length; i++){
     $("#entryPoint").append('<option value="'+i+'">'+abi.entry[i].name+'</option>');
@@ -76,42 +79,52 @@ function buildAbiInterface(){
     }
     currentEntry = abi.entry[this.value];
     $("#inputFields").html('');
-    buildInputFields('input', currentEntry.input);
+    buildFields('input', currentEntry.input, '#inputFields');
     return true;
   });
 }
-function buildInputFields(lab, cc){
+function buildFields(lab, cc, id){
   for(var i = 0; i < cc.length; i++){
     var nn = lab + '.' + cc[i].name;
     if (typeof abi.struct != 'undefined'){
       ind = fi._core.helper.findInObjArray(abi.struct, 'name', cc[i].type[0]);
     } else ind = -1;
     if (ind >= 0){
-      buildInputFields(nn, abi.struct[ind].type);
+      buildFields(nn, abi.struct[ind].type, id);
     } else {
-      $("#inputFields").append('<div class="col-md-12"><label>'+nn+'</label><input type="text" class="form-control" name="'+nn+'" placeholder="' + cc[i].type[0] + '"></div>');
+      $(id).append('<div class="col-md-12"><label style="text-transform:capitalize;">'+nn+'</label><input type="text" class="form-control" name="'+nn+'" placeholder="' + fi._core.compile.type(cc[i].type) + '"></div>');
     }
   }
 }
+
 function run(){
-  var storage = $("#storage").val(),
-  input = fi.abi.call(currentEntry.name, getJsonInput().input);
-  if (!storage || !input) return alert("Please enter storage and input");;
   $('#runtrace').html("Loading...");
-  $.post("https://api.fi-code.com/run", {
-    code:ml,
-    storage : storage,
-    input : input
-  }, function(result){
-    if (result.success)
-      $('#runtrace').html(result.data.stdout);
-    else
-      $('#runtrace').html("There was an unknown error");
-  });
+	try {
+		var 
+		input = fi.abi.entry(currentEntry.name, getJsonFromInput('input').input),
+		storage = fi.abi.storage(getJsonFromInput('storage').storage);
+		if (!storage || !input) throw "Please enter storage and input";
+		$.post("https://api.fi-code.com/run", {
+			code:ml,
+			storage : storage,
+			input : input
+		}, function(result){
+			if (result.success){
+				console.log(result.data.stdout.split("\n")[1].trim());
+				$('#runtrace').html(result.data.stdout);
+			}
+			else {
+				console.log(result);
+				$('#runtrace').html("There was an unknown error");
+			}
+		});
+	} catch(e){
+		$('#runtrace').html("Error running program, please check input and storage variables");
+	}
 }
-function getJsonInput(){
+function getJsonFromInput(i){
   var obj = {};
-  var t = $("input[name^='input']").map(function(){
+  var t = $("input[name^='"+i+"']").map(function(){
     var name = $(this).attr('name');
     return [name.split(".").concat([$(this).val()])];
   }).get();
@@ -133,22 +146,21 @@ function buildJson(t, oo){
 }
 function copyToClipboard(text) {
   if (window.clipboardData && window.clipboardData.setData) {
-      // IE specific code path to prevent textarea being shown while dialog is visible.
-      return clipboardData.setData("Text", text); 
+		return clipboardData.setData("Text", text); 
 
   } else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
-      var textarea = document.createElement("textarea");
-      textarea.textContent = text;
-      textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in MS Edge.
-      document.body.appendChild(textarea);
-      textarea.select();
-      try {
-          return document.execCommand("copy");  // Security exception may be thrown by some browsers.
-      } catch (ex) {
-          console.warn("Copy to clipboard failed.", ex);
-          return false;
-      } finally {
-          document.body.removeChild(textarea);
-      }
+		var textarea = document.createElement("textarea");
+		textarea.textContent = text;
+		textarea.style.position = "fixed"; 
+		document.body.appendChild(textarea);
+		textarea.select();
+		try {
+			return document.execCommand("copy"); 
+		} catch (ex) {
+			console.warn("Copy to clipboard failed.", ex);
+			return false;
+		} finally {
+			document.body.removeChild(textarea);
+		}
   }
 }

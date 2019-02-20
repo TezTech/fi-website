@@ -24,7 +24,11 @@
           <li class="nav-item">
             <a class="nav-link" href="https://learn.fi-code.com/" target="_blank">Documentation</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://teztech.io" target="_blank">TezTech Labs</a>
+          </li>
         </ul>
+        <span style="margin-right: 20px!important;color:white;font-weight: bold;"><span class="badge badge-danger">We are currently in Alpha</span></span>
         <a class="btn btn-outline-danger my-2 my-sm-0" href="https://github.com/TezTech/fi-compiler" target="_blank">View Source</a>
       </div>
     </nav>
@@ -32,16 +36,15 @@
       <div class="row d-none d-sm-none d-md-block" style="height:150px;">
         <div class="col-md-12 text-center">
           <h2>Welcome to fi - smart coding for smart contracts</h2>
-          <p><strong>fi</strong> (pronounced fee) is a high-level language for <a href="http://www.michelson-lang.com/" target="_blank">Michelson</a>, allowing programmers to easily develop <a href="http://tezos.com" target="_blank">Tezos</a>.</p>
-          <p><strong>We are currently in alpha</strong></p>
+          <p><strong>fi</strong> (pronounced fee) is a high-level language for <a href="https://tezos.gitlab.io/mainnet/whitedoc/michelson.html" target="_blank">Michelson</a>, allowing programmers to easily develop on <a href="http://tezos.com" target="_blank">Tezos</a>.</p>
         </div>
       </div>
-      <div class="row h-100 flex-grow-1">
+      <div class="row h-100 flex-grow-1" style="    padding-bottom: 20px;">
         <div class="col-md-12">
           <div class="row h-100">
             <div class="col-md-6 h-100 d-flex flex-column flex-grow-1">
               <div>
-                <label>fi Editor</label>
+                <label>Editor</label>
                 <button type="button" id="clear" class="btn btn-danger pull-right">Clear</button>
                 <button type="button" id="compile" class="btn btn-primary pull-right">Compile</button>
               </div>
@@ -98,16 +101,16 @@ entry update(string newName, nat newAge){
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="storage">Storage</label>
-                        <input type="text" class="form-control" id="storage" value="">
+												<div id="storageFields" class="row">
+												</div>
                       </div>
                     </div>
                   </div>
                   <div class="row" style="margin-bottom:30px;">
-                    <div class="col-md-6">
-                        <button type="button" id="run" class="btn btn-primary">Run</button>
-                    </div>
-                  </div>
+                    <div class="col-md-12">
+											<button type="button" id="run" class="btn btn-primary">Run</button>
+											<!--<label style="padding-left:30px;"><input type="checkbox" class="form-check-input" id="exampleCheck1"> Auto-update storage</label>-->
+                    </div>                  </div>
                   <div class="row">
                     <div class="col-md-12">
                       <pre id="runtrace"></pre>
@@ -117,11 +120,6 @@ entry update(string newName, nat newAge){
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12 text-center footer">
-        Developed by <a href="https://teztech.io" target="_blank">TezTech Labs</a>
         </div>
       </div>
     </div>
