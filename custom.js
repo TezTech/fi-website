@@ -5,6 +5,47 @@ editor.getSession().setMode("ace/mode/fi");
 editor.session.setOption("useWorker", false);
 $('docmenut').ready(function(){
   compile();
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    switch($(e.target).attr('id')){
+      case "run-tab":
+        $("#inputCol").show();
+        $("#storageCol").show();
+        $("#deployCol").hide();
+        $("#callCol").hide();
+        $("button#run").show();
+        $("button#deploy").hide();
+        $("button#call").hide();
+        $('#runpre').show();
+        $('#deploypre').hide();
+        $('#callpre').hide();
+      break;
+      case "deploy-tab":
+        console.log($(e.target).attr('id'));
+        $("#inputCol").hide();
+        $("#storageCol").show();
+        $("#deployCol").show();
+        $("#callCol").hide();
+        $("button#run").hide();
+        $("button#deploy").show();
+        $("button#call").hide();
+        $('#runpre').hide();
+        $('#deploypre').show();
+        $('#callpre').hide();
+      break;
+      case "call-tab":
+        $("#inputCol").show();
+        $("#storageCol").hide();
+        $("#deployCol").hide();
+        $("#callCol").show();
+        $("button#run").hide();
+        $("button#deploy").hide();
+        $("button#call").show();
+        $('#runpre').hide();
+        $('#deploypre').hide();
+        $('#callpre').show();
+      break;
+    }
+  });
   $('button#copyMichelson').click(function(){
      copyToClipboard($("#compiled").html()); 
      alert("Compiled code has been copied");
@@ -25,6 +66,12 @@ $('docmenut').ready(function(){
   });
   $('button#run').click(function(){
     run();
+  });
+  $('button#deploy').click(function(){
+    deploy();
+  });
+  $('button#call').click(function(){
+    call();
   });
 });
 function compile(){
@@ -70,7 +117,9 @@ function compile(){
 				$('#stacktrace').html("Typecheck error");
 			}
     });
-		$('#runtrace').html("Please enter input and storage above to run");
+		$('#runtrace').html("Please complete storage and input fields above to run a test");
+		$('#deploytrace').html("Please complete storage and deployment details above to generate origination");
+		$('#calltrace').html("Please complete input and transfer details above to generate call");
     return ml;
   } catch(e){
     $("#compiled").html(e);
@@ -171,6 +220,37 @@ function formatMlLines(t, ti){
 }
 function formatMl(ml){
 	return formatMlLines(ml, 0).replace(/; }/g, " }")
+}
+function deploy(){
+  $('#deploytrace').html("Loading...");
+	try {
+    var manager = $("[name=manager]").val();
+    var contractName = $("[name=contractName]").val();
+    var initialBalance = $("[name=initialBalance]").val();
+    if (!manager) throw "Please enter a manager (local alias or address)";
+		var 
+		storage = fi.abi.storage(getJsonFromInput('storage').storage);
+		if (!storage) throw "Please enter storage variables";
+		$('#deploytrace').html("./tezos-client originate contract "+contractName+" for "+manager+" transferring "+initialBalance+" from "+manager+" running '"+$("#compiled").html()+"' --init '"+storage+"'");
+	} catch(e){
+		$('#deploytrace').html("Error generating storage, please check your storage variables");
+	}
+}
+function call(){
+  $('#calltrace').html("Loading...");
+	try {
+    var source = $("[name=source]").val();
+    var destination = $("[name=destination]").val();
+    var amount = $("[name=amount]").val();
+    if (!source) throw "Please enter a from/source (local alias or address)";
+    if (!destination) throw "Please enter the smart contract address (local alias or address)";
+		var 
+		input = fi.abi.entry(currentEntry.name, getJsonFromInput('input').input);
+		if (!input) throw "Please select an entry and enter your input variables";
+		$('#calltrace').html("./tezos-client transfer "+amount+" from "+source+" to "+destination+" --arg '"+input+"'");
+	} catch(e){
+		$('#calltrace').html("Error generating call, please check your input variables");
+	}
 }
 function run(){
   $('#runtrace').html("Loading...");
